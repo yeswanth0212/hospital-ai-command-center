@@ -1,0 +1,271 @@
+/* ============================================================
+   Smart Hospital AI — Premium Clinical UI
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap');
+
+:root {
+    --bg: #050810;
+    --surface: rgba(13, 20, 38, 0.9);
+    --border: rgba(255, 255, 255, 0.07);
+    --accent: #00D4A8;
+    --accent-dim: rgba(0, 212, 168, 0.12);
+    --blue: #3B82F6;
+    --blue-dim: rgba(59, 130, 246, 0.12);
+    --purple: #A78BFA;
+    --purple-dim: rgba(167, 139, 250, 0.12);
+    --orange: #FB923C;
+    --orange-dim: rgba(251, 146, 60, 0.12);
+    --danger: #F87171;
+    --danger-dim: rgba(248, 113, 113, 0.12);
+    --warning: #FBBF24;
+    --text: #F1F5F9;
+    --text-dim: #64748B;
+    --text-mid: #94A3B8;
+    --radius: 16px;
+    --radius-sm: 10px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Subtle animated background */
+body::before {
+    content: '';
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 20% 10%, rgba(0, 212, 168, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+}
+
+/* ---- TYPOGRAPHY ---- */
+h1 { font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; font-weight: 700; }
+h1 .accent { color: var(--accent); }
+h2 { font-size: 1.1rem; font-weight: 600; }
+h3 { font-size: 0.9rem; font-weight: 600; }
+.subtitle { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.5px; margin-top: 2px; }
+.tiny-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); font-weight: 700; }
+
+/* ---- LAYOUT ---- */
+.header {
+    display: flex; align-items: center; gap: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(5, 8, 16, 0.95);
+    backdrop-filter: blur(20px);
+}
+.header-brand { display: flex; align-items: center; gap: 0.75rem; }
+.brand-icon { width: 38px; height: 38px; background: var(--accent); border-radius: 10px; display: grid; place-items: center; font-size: 1.2rem; box-shadow: 0 0 20px rgba(0, 212, 168, 0.3); }
+.header-center { flex: 1; display: flex; justify-content: center; }
+.header-actions { display: flex; align-items: center; gap: 0.75rem; }
+
+.scenario-bar {
+    display: flex; align-items: center; gap: 0.75rem;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    padding: 6px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 600;
+}
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 1.5s infinite; }
+#scenario-select { background: transparent; border: none; color: var(--text); font-size: 0.75rem; font-weight: 600; cursor: pointer; outline: none; }
+
+.mode-toggle { display: flex; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 3px; }
+.mode-btn { border: none; background: transparent; color: var(--text-dim); font-size: 0.7rem; font-weight: 700; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+.mode-btn.active { background: var(--accent); color: #000; box-shadow: 0 0 12px rgba(0,212,168,0.3); }
+
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 7px 16px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+.btn-ghost:hover { border-color: var(--text-mid); color: var(--text); }
+.btn-primary { background: var(--accent); color: #000; border: none; padding: 7px 18px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(0,212,168,0.25); transition: 0.2s; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 25px rgba(0,212,168,0.35); }
+
+.layout {
+    display: grid;
+    grid-template-columns: 300px 1fr 280px;
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
+    min-height: calc(100vh - 70px);
+    position: relative; z-index: 1;
+}
+
+/* ---- PANEL BASE ---- */
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+}
+.panel-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+.panel-icon { font-size: 1rem; }
+.panel-header h3 { flex: 1; }
+
+/* ---- TRIAGE TAGS ---- */
+.legend { display: flex; gap: 0.4rem; margin-left: auto; }
+.tag { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; letter-spacing: 0.5px; }
+.tag.easy, .badge-easy { background: rgba(0,212,168,0.12); color: var(--accent); border: 1px solid rgba(0,212,168,0.25); }
+.tag.medium, .badge-medium { background: rgba(251,146,60,0.12); color: var(--orange); border: 1px solid rgba(251,146,60,0.25); }
+.tag.high, .badge-high { background: rgba(248,113,113,0.12); color: var(--danger); border: 1px solid rgba(248,113,113,0.25); animation: pulse-border 1.5s infinite; }
+
+@keyframes pulse-border { 0%, 100% { border-color: rgba(248,113,113,0.25); } 50% { border-color: rgba(248,113,113,0.7); } }
+@keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+/* ---- PATIENT CARDS (sidebar) ---- */
+.sidebar-left .panel { height: 100%; }
+#patient-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.patient-row {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem;
+    transition: 0.25s;
+    position: relative;
+    overflow: hidden;
+}
+.patient-row:hover { background: rgba(255,255,255,0.04); transform: translateX(3px); }
+.patient-row-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
+.patient-name { font-weight: 600; font-size: 0.88rem; }
+.patient-sev { font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; font-weight: 700; }
+.patient-cond { font-size: 0.72rem; color: var(--text-dim); text-transform: capitalize; margin-bottom: 0.5rem; }
+.sev-bar-bg { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+.sev-bar { height: 100%; border-radius: 2px; transition: 0.3s; }
+
+/* ---- DECISION CARD (the BIG panel) ---- */
+.decision-card {
+    margin-bottom: 1.25rem;
+    border-color: rgba(0, 212, 168, 0.15);
+    background: rgba(13, 20, 38, 0.95);
+}
+.decision-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+}
+.panel-title-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+.ai-badge { background: rgba(0,212,168,0.12); color: var(--accent); border: 1px solid rgba(0,212,168,0.3); border-radius: 6px; font-size: 0.65rem; font-weight: 800; padding: 3px 8px; letter-spacing: 0.5px; }
+.decision-subtitle { font-size: 0.72rem; color: var(--text-dim); }
+.conf-badge { font-size: 0.7rem; font-weight: 700; color: var(--text-mid); border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; }
+
+.decision-action-box { text-align: right; }
+.action-badge {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    padding: 8px 20px; border-radius: 10px; margin-top: 6px;
+    letter-spacing: 1px;
+}
+.action-icu { background: rgba(248,113,113,0.15); color: var(--danger); border: 1px solid rgba(248,113,113,0.3); }
+.action-general { background: rgba(59,130,246,0.15); color: var(--blue); border: 1px solid rgba(59,130,246,0.3); }
+.action-wait { background: rgba(100,116,139,0.1); color: var(--text-dim); border: 1px solid var(--border); }
+
+/* ---- SELECTED PATIENT ROW ---- */
+.selected-patient {
+    display: flex; align-items: center; gap: 1rem;
+    background: rgba(0,212,168,0.04);
+    border: 1px solid rgba(0,212,168,0.12);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+    transition: 0.3s;
+}
+.patient-avatar {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: rgba(0,212,168,0.15); color: var(--accent);
+    display: grid; place-items: center;
+    font-size: 1.3rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif;
+    border: 1px solid rgba(0,212,168,0.2);
+    flex-shrink: 0;
+}
+#sel-patient-name { font-size: 1rem; font-weight: 700; margin: 2px 0 5px; }
+.patient-meta { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.meta-chip { font-size: 0.7rem; padding: 2px 8px; border-radius: 5px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-mid); }
+
+/* ---- THE TWO WHY BOXES (CRITICAL) ---- */
+.why-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+.why-box {
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    transition: 0.3s;
+}
+.why-patient-box {
+    background: rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+.why-bed-box {
+    background: rgba(167, 139, 250, 0.05);
+    border: 1px solid rgba(167, 139, 250, 0.2);
+}
+.why-label {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.78rem;
+}
+.why-icon { font-size: 1rem; }
+.why-box strong { font-size: 0.82rem; font-weight: 700; color: var(--text); }
+.why-box p {
+    font-size: 0.83rem;
+    color: var(--text-mid);
+    line-height: 1.65;
+}
+
+/* Confidence row */
+.confidence-row { display: flex; align-items: center; gap: 0.75rem; }
+.conf-bar-bg { flex: 1; height: 5px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.conf-bar-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--accent)); border-radius: 3px; transition: width 0.6s ease; }
+.conf-pct { font-size: 0.75rem; font-weight: 700; color: var(--accent); min-width: 35px; text-align: right; }
+
+/* ---- METRICS ROW ---- */
+.metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
+.metric-card { padding: 1rem; text-align: center; }
+.metric-value { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; font-weight: 700; margin-top: 4px; }
+.metric-value.green { color: var(--accent); }
+.metric-value.blue { color: var(--blue); }
+.metric-value.purple { color: var(--purple); }
+.metric-value.orange { color: var(--orange); }
+
+/* ---- CHARTS ---- */
+.charts-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.chart-panel { padding: 1rem; }
+.chart-panel canvas { height: 130px !important; }
+
+/* ---- DECISION LOG (right sidebar) ---- */
+.sidebar-right .panel { height: 100%; }
+#decision-log { display: flex; flex-direction: column; gap: 0.6rem; }
+.log-entry {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem;
+    font-size: 0.75rem;
+    transition: 0.2s;
+}
+.log-entry:hover { background: rgba(255,255,255,0.04); }
+.log-step { color: var(--text-dim); font-size: 0.65rem; font-weight: 700; margin-bottom: 4px; }
+.log-patient { font-weight: 700; margin-bottom: 4px; }
+.log-why { color: var(--text-dim); line-height: 1.5; font-size: 0.7rem; }
+.log-reward { font-weight: 700; font-size: 0.8rem; }
+
+/* ---- BED AVAILABILITY ---- */
+.bed-status { display: flex; flex-direction: column; gap: 0.85rem; }
+.bed-row { display: flex; flex-direction: column; gap: 0.4rem; }
+.bed-label-row { display: flex; justify-content: space-between; align-items: center; }
+.bed-type-label { font-size: 0.75rem; font-weight: 700; }
+.bed-count { font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; font-weight: 700; }
+.bed-bar-bg { height: 8px; background: rgba(255,255,255,0.06); border-radius: 6px; overflow: hidden; }
+.bed-bar { height: 100%; border-radius: 6px; transition: width 0.6s ease; }
+.icu-bar { background: linear-gradient(90deg, #F87171, #EF4444); }
+.gen-bar { background: linear-gradient(90deg, #3B82F6, #60A5FA); }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }

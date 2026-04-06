@@ -1,0 +1,55 @@
+name: Smart Hospital AI Command Center
+version: 2.0.0
+description: A hospital triage and bed allocation simulator with realistic patient deterioration, compliant with OpenEnv specifications.
+author: SmartHospitalTeam
+
+action_space:
+  type: discrete
+  actions:
+    - ICU: Allocate an Intensive Care Unit bed to a patient.
+    - GENERAL: Allocate a General ward bed to a patient.
+    - WAIT: Wait for a timestep (patients deteriorate).
+  parameters:
+    patient_id: string (id of the patient to allocate, optional for WAIT action)
+
+observation_space:
+  icu_available: integer (0 to 5)
+  general_available: integer (0 to 15)
+  patients: list of Patient objects (tracking severity, waiting_time, condition, status)
+  current_step: integer (0 to max_steps)
+  cumulative_reward: float
+  deaths: integer
+  survival_rate: float (0.0 to 100.0)
+  resource_util: float (0.0 to 100.0)
+  fairness_index: float
+  efficiency_score: float (0.0 to 100.0)
+  alerts: list of strings
+  scenario: string (NORMAL, OVERLOAD, SHORTAGE, STABLE)
+
+reward_design:
+  type: continuous
+  correct_icu: +1.0
+  correct_general: +0.5
+  wrong_allocation: -1.0
+  patient_death: -2.0
+  wait_penalty: -0.1
+
+tasks:
+  - id: easy
+    name: Prioritize High Severity Patients
+    goal: Assign ICU beds correctly to patients with severity >= 7
+    grader:
+      path: backend/graders.py
+      class: EasyGrader
+  - id: medium
+    name: Efficient Resource Allocation
+    goal: Balance ICU and General bed usage without waste, penalize overuse of ICU for low severity patients
+    grader:
+      path: backend/graders.py
+      class: MediumGrader
+  - id: hard
+    name: Minimize Deaths & Maximize Throughput
+    goal: Minimize patient deaths while maximizing treated patients through holistic metric balancing
+    grader:
+      path: backend/graders.py
+      class: HardGrader

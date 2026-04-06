@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Hospital | AI Command Center</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-brand">
+            <div class="brand-icon">⚕</div>
+            <div>
+                <h1>SmartHosp<span class="accent">AI</span></h1>
+                <p class="subtitle">Autonomous Triage Intelligence Engine</p>
+            </div>
+        </div>
+        <div class="header-center">
+            <div class="scenario-bar">
+                <span class="live-dot"></span>
+                <span id="scenario-text">SYSTEM ONLINE</span>
+                <select id="scenario-select" onchange="changeScenario()">
+                    <option value="NORMAL">Normal Ops</option>
+                    <option value="OVERLOAD">Mass Casualty</option>
+                    <option value="SHORTAGE">ICU Shortage</option>
+                    <option value="STABLE">Stable Routine</option>
+                </select>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="mode-toggle">
+                <button id="mode-llm" class="mode-btn active" onclick="setMode('llm')">🤖 AI</button>
+                <button id="mode-heuristic" class="mode-btn" onclick="setMode('heuristic')">📋 RULE</button>
+            </div>
+            <button class="btn-ghost" onclick="resetSim()">Reset</button>
+            <button class="btn-primary" onclick="autoRunSimulation()" id="start-btn">▶ Autonomous Start</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <!-- LEFT: Patient Queue -->
+        <aside class="sidebar-left">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">🛏</span>
+                    <h3>Bed Availability</h3>
+                </div>
+                <div class="bed-status">
+                    <div class="bed-row">
+                        <div class="bed-label-row">
+                            <span class="bed-type-label">🔴 ICU</span>
+                            <span id="icu-count" class="bed-count">— / 5</span>
+                        </div>
+                        <div class="bed-bar-bg">
+                            <div id="icu-bar" class="bed-bar icu-bar" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div class="bed-row">
+                        <div class="bed-label-row">
+                            <span class="bed-type-label">🔵 General Ward</span>
+                            <span id="gen-count" class="bed-count">— / 15</span>
+                        </div>
+                        <div class="bed-bar-bg">
+                            <div id="gen-bar" class="bed-bar gen-bar" style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" style="margin-top:1.25rem">
+                <div class="panel-header">
+                    <span class="panel-icon">👥</span>
+                    <h3>Patient Queue</h3>
+                    <div class="legend">
+                        <span class="tag easy">Easy</span>
+                        <span class="tag medium">Medium</span>
+                        <span class="tag high">High</span>
+                    </div>
+                </div>
+                <div id="patient-list"></div>
+            </div>
+        </aside>
+
+        <!-- CENTER: AI Decision Rationale (THE MAIN FOCUS) -->
+        <main class="main-content">
+
+            <!-- THE CRITICAL PANEL: WHY this patient, WHY this bed -->
+            <div class="decision-card panel">
+                <div class="decision-header">
+                    <div>
+                        <div class="panel-title-row">
+                            <span class="ai-badge">🧠 AI</span>
+                            <h2>Clinical Allocation Decision</h2>
+                            <span id="conf-badge" class="conf-badge">Ready</span>
+                        </div>
+                        <p class="decision-subtitle">Real-time explanation for every bed assignment</p>
+                    </div>
+                    <div class="decision-action-box" id="decision-action-box">
+                        <span class="tiny-label">Bed Allocated</span>
+                        <div id="action-badge" class="action-badge action-wait">WAITING</div>
+                    </div>
+                </div>
+
+                <!-- SELECTED PATIENT -->
+                <div class="selected-patient" id="selected-patient">
+                    <div class="patient-avatar" id="avatar-initial">?</div>
+                    <div class="patient-info">
+                        <span class="tiny-label">Selected Patient</span>
+                        <h3 id="sel-patient-name">— Awaiting Decision —</h3>
+                        <div class="patient-meta" id="sel-patient-meta"></div>
+                    </div>
+                </div>
+
+                <!-- TWO WHY BOXES -->
+                <div class="why-grid">
+                    <div class="why-box why-patient-box">
+                        <div class="why-label">
+                            <span class="why-icon">🎯</span>
+                            <strong>Why This Patient?</strong>
+                        </div>
+                        <p id="why-patient-text">Waiting for AI to analyze the queue...</p>
+                    </div>
+                    <div class="why-box why-bed-box">
+                        <div class="why-label">
+                            <span class="why-icon">🏥</span>
+                            <strong>Why This Bed Type?</strong>
+                        </div>
+                        <p id="why-bed-text">Waiting for bed type selection...</p>
+                    </div>
+                </div>
+
+                <!-- Confidence bar -->
+                <div class="confidence-row">
+                    <span class="tiny-label">AI Confidence</span>
+                    <div class="conf-bar-bg"><div id="conf-bar" class="conf-bar-fill" style="width:0%"></div></div>
+                    <span id="conf-pct" class="conf-pct">0%</span>
+                </div>
+            </div>
+
+            <!-- Metrics Row -->
+            <div class="metrics-row">
+                <div class="metric-card panel">
+                    <span class="tiny-label">Survival Rate</span>
+                    <div id="survival-rate" class="metric-value green">0%</div>
+                </div>
+                <div class="metric-card panel">
+                    <span class="tiny-label">System Efficiency</span>
+                    <div id="efficiency-score" class="metric-value blue">0%</div>
+                </div>
+                <div class="metric-card panel">
+                    <span class="tiny-label">ICU Available</span>
+                    <div id="icu-avail" class="metric-value purple">—</div>
+                </div>
+                <div class="metric-card panel">
+                    <span class="tiny-label">General Beds</span>
+                    <div id="gen-avail" class="metric-value orange">—</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-row">
+                <div class="chart-panel panel">
+                    <span class="tiny-label">Reward Trend</span>
+                    <canvas id="rewardChart"></canvas>
+                </div>
+                <div class="chart-panel panel">
+                    <span class="tiny-label">Bed Utilization</span>
+                    <canvas id="usageChart"></canvas>
+                </div>
+                <div class="chart-panel panel">
+                    <span class="tiny-label">Severity Mix</span>
+                    <canvas id="severityChart"></canvas>
+                </div>
+            </div>
+        </main>
+
+        <!-- RIGHT: Decision Log -->
+        <aside class="sidebar-right">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">📋</span>
+                    <h3>Decision Log</h3>
+                </div>
+                <div id="decision-log"></div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="app.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
