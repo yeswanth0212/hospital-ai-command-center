@@ -3,7 +3,7 @@
 // =============================================
 
 const _origin = window.location.origin;
-const API = (_origin.includes("file:") || window.location.port !== "8000") ? "http://localhost:8000" : _origin;
+const API = window.location.origin;
 let charts = {};
 let isRunning = false;
 let agentMode = "llm";
